@@ -1,1 +1,100 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lançamentos</title>
 
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.box{
+ background:white;
+ padding:15px;
+ border-radius:10px;
+ margin-bottom:15px;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+.card{
+ background:#fafafa;
+ padding:10px;
+ margin:5px 0;
+ border-radius:5px;
+}
+
+button{
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:8px 12px;
+ border-radius:5px;
+ cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Lançamentos Financeiros</h2>
+
+<div class="box">
+
+<select id="tipo">
+<option value="receita">Receita</option>
+<option value="despesa">Despesa</option>
+</select>
+
+<input id="descricao" placeholder="Descrição">
+<input id="valor" type="number" placeholder="Valor">
+
+<button onclick="salvar()">Salvar</button>
+
+</div>
+
+<h3>Histórico</h3>
+<div id="lista"></div>
+
+<script>
+
+async function salvar(){
+
+ await supabase.from("lancamentos_financeiros").insert({
+  tipo:tipo.value,
+  descricao:descricao.value,
+  valor:valor.value
+ })
+
+ descricao.value=""
+ valor.value=""
+
+ carregar()
+}
+
+async function carregar(){
+
+ const {data}=await supabase
+ .from("lancamentos_financeiros")
+ .select("*")
+ .order("created_at",{ascending:false})
+
+ lista.innerHTML=data.map(l=>`
+  <div class="card">
+   ${l.tipo.toUpperCase()} - ${l.valor}<br>
+   ${l.descricao || ""}<br>
+   ${new Date(l.created_at).toLocaleString()}
+  </div>
+ `).join("")
+}
+
+carregar()
+
+</script>
+
+</body>
+</html>
