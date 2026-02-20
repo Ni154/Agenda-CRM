@@ -1,1 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatórios</title>
 
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.cards{
+ display:flex;
+ gap:15px;
+ flex-wrap:wrap;
+}
+
+.card{
+ background:white;
+ padding:20px;
+ border-radius:10px;
+ flex:1;
+ min-width:200px;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Relatórios</h2>
+
+<div class="cards">
+
+<div class="card">
+<h3>Receita Total</h3>
+<p id="receita">0</p>
+</div>
+
+<div class="card">
+<h3>Despesa Total</h3>
+<p id="despesa">0</p>
+</div>
+
+<div class="card">
+<h3>Resultado</h3>
+<p id="resultado">0</p>
+</div>
+
+</div>
+
+<script>
+
+async function carregar(){
+
+ const {data:r}=await supabase.from("vw_receita_total").select("*").single()
+ const {data:d}=await supabase.from("vw_despesa_total").select("*").single()
+ const {data:res}=await supabase.from("vw_resultado").select("*").single()
+
+ if(r) receita.innerText=r.receita_total
+ if(d) despesa.innerText=d.despesa_total
+ if(res) resultado.innerText=res.resultado
+}
+
+carregar()
+
+</script>
+
+</body>
+</html>
