@@ -1,1 +1,132 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Produtos</title>
 
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.card{
+ background:white;
+ padding:15px;
+ margin:10px 0;
+ border-radius:10px;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+
+form{
+ background:white;
+ padding:15px;
+ border-radius:10px;
+ margin-bottom:15px;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+button{
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:8px 12px;
+ border-radius:5px;
+ cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Produtos</h2>
+
+<form onsubmit="salvar(event)">
+<input id="nome" placeholder="Nome do produto">
+<input id="custo" type="number" placeholder="Custo">
+<input id="preco" type="number" placeholder="Preço">
+<input id="estoque" type="number" placeholder="Estoque inicial">
+<input id="minimo" type="number" placeholder="Estoque mínimo">
+
+<select id="tipo">
+<option value="revenda">Revenda</option>
+<option value="uso">Uso interno</option>
+</select>
+
+<button>Salvar</button>
+</form>
+
+<div id="lista"></div>
+
+<script>
+
+let editId=null
+
+async function carregar(){
+
+ const {data}=await supabase.from("produtos").select("*").order("nome")
+
+ lista.innerHTML=data.map(p=>`
+ <div class="card">
+  <div>
+   <b>${p.nome}</b><br>
+   Tipo: ${p.tipo}<br>
+   Estoque: ${p.estoque_atual}
+  </div>
+  <div>
+   <button onclick="editar('${p.id}')">Editar</button>
+  </div>
+ </div>
+ `).join("")
+}
+
+async function salvar(e){
+ e.preventDefault()
+
+ const payload={
+  nome:nome.value,
+  custo:custo.value,
+  preco:preco.value,
+  estoque_atual:estoque.value,
+  estoque_minimo:minimo.value,
+  tipo:tipo.value
+ }
+
+ if(editId){
+  await supabase.from("produtos").update(payload).eq("id",editId)
+  editId=null
+ }else{
+  await supabase.from("produtos").insert(payload)
+ }
+
+ e.target.reset()
+ carregar()
+}
+
+async function editar(id){
+
+ const {data}=await supabase.from("produtos").select("*").eq("id",id).single()
+
+ nome.value=data.nome
+ custo.value=data.custo
+ preco.value=data.preco
+ estoque.value=data.estoque_atual
+ minimo.value=data.estoque_minimo
+ tipo.value=data.tipo
+
+ editId=id
+}
+
+carregar()
+
+</script>
+
+</body>
+</html>
