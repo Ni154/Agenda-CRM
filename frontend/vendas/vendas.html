@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vendas</title>
 
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.card{
+ background:white;
+ padding:15px;
+ margin:10px 0;
+ border-radius:10px;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+
+button{
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:8px 12px;
+ border-radius:5px;
+ cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Vendas</h2>
+
+<button onclick="novo()">Nova Venda</button>
+
+<div id="lista"></div>
+
+<script>
+
+async function carregar(){
+
+ const {data}=await supabase
+ .from("vendas")
+ .select("id,total,status,clientes(nome),created_at")
+ .order("created_at",{ascending:false})
+
+ lista.innerHTML=data.map(v=>`
+ <div class="card">
+  <div>
+   <b>${v.clientes?.nome || "-"}</b><br>
+   Total: ${v.total}<br>
+   Status: ${v.status}
+  </div>
+  <button onclick="abrir('${v.id}')">Abrir</button>
+ </div>
+ `).join("")
+}
+
+function novo(){
+ window.location.href="venda-form.html"
+}
+
+function abrir(id){
+ window.location.href=`venda-form.html?id=${id}`
+}
+
+carregar()
+
+</script>
+
+</body>
+</html>
