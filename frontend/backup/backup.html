@@ -1,1 +1,79 @@
 
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Backup</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.box{
+ background:white;
+ padding:20px;
+ border-radius:10px;
+ max-width:400px;
+ margin:auto;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+button{
+ width:100%;
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:10px;
+ border-radius:5px;
+ margin:5px 0;
+ cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Backup</h2>
+
+<button onclick="exportar('clientes')">Exportar Clientes</button>
+<button onclick="exportar('agendamentos')">Exportar Agendamentos</button>
+<button onclick="exportar('vendas')">Exportar Vendas</button>
+<button onclick="exportar('lancamentos_financeiros')">Exportar Financeiro</button>
+
+</div>
+
+<script>
+
+async function exportar(tabela){
+
+ const {data}=await supabase.from(tabela).select("*")
+
+ if(!data || !data.length){
+  alert("Sem dados")
+  return
+ }
+
+ const csv = [
+  Object.keys(data[0]).join(","),
+  ...data.map(o=>Object.values(o).join(","))
+ ].join("\n")
+
+ const blob=new Blob([csv],{type:"text/csv"})
+ const a=document.createElement("a")
+ a.href=URL.createObjectURL(blob)
+ a.download=`${tabela}.csv`
+ a.click()
+}
+
+</script>
+
+</body>
+</html>
