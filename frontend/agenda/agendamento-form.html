@@ -3,26 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Agenda</title>
+<title>Novo Agendamento</title>
 
 <link rel="stylesheet" href="../css/style.css">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="../js/supabase.js"></script>
-<script src="../js/agenda.js"></script>
 
 <style>
 body{font-family:Arial;background:#f4f4f4;padding:20px}
 
-.card{
+.box{
  background:white;
- padding:15px;
- margin:10px 0;
+ padding:20px;
  border-radius:10px;
+ max-width:400px;
+ margin:auto;
  box-shadow:0 5px 10px rgba(0,0,0,0.1);
 }
 
+input,select{
+ width:100%;
+ padding:10px;
+ margin:5px 0;
+ border-radius:5px;
+ border:1px solid #ccc;
+}
+
 button{
+ width:100%;
  background:#C9A227;
  color:white;
  border:none;
@@ -36,41 +45,49 @@ button{
 
 <body>
 
-<h2>Agenda</h2>
+<div class="box">
 
-<button onclick="novo()">Novo Agendamento</button>
+<h2>Novo Agendamento</h2>
 
-<div id="lista"></div>
+<label>Cliente</label>
+<select id="cliente"></select>
+
+<label>Serviço</label>
+<select id="servico"></select>
+
+<label>Data e Hora</label>
+<input type="datetime-local" id="data">
+
+<button onclick="salvar()">Salvar</button>
+
+</div>
 
 <script>
+
 async function carregar(){
 
- const {data}=await supabase
- .from("agendamentos")
- .select(`
-   id,
-   data_hora,
-   status,
-   clientes(nome),
-   servicos(nome)
- `)
- .order("data_hora",{ascending:true})
+ const {data:clientes}=await supabase.from("clientes").select("id,nome")
+ cliente.innerHTML=clientes.map(c=>`<option value="${c.id}">${c.nome}</option>`)
 
- lista.innerHTML=data.map(a=>`
- <div class="card">
-  <b>${a.clientes?.nome || "-"}</b><br>
-  ${a.servicos?.nome || "-"}<br>
-  ${new Date(a.data_hora).toLocaleString()}<br>
-  Status: ${a.status}
- </div>
- `).join("")
+ const {data:servicos}=await supabase.from("servicos").select("id,nome")
+ servico.innerHTML=servicos.map(s=>`<option value="${s.id}">${s.nome}</option>`)
 }
 
-function novo(){
- window.location.href="agendamento-form.html"
+async function salvar(){
+
+ await supabase.from("agendamentos").insert({
+  cliente_id:cliente.value,
+  servico_id:servico.value,
+  data_hora:data.value,
+  status:"agendado"
+ })
+
+ alert("Agendado!")
+ window.location.href="agenda.html"
 }
 
 carregar()
+
 </script>
 
 </body>
