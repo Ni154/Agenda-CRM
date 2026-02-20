@@ -1,1 +1,159 @@
 
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venda</title>
+
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.box{
+ background:white;
+ padding:15px;
+ border-radius:10px;
+ margin-bottom:15px;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+.card{
+ background:#fafafa;
+ padding:10px;
+ margin:5px 0;
+ border-radius:5px;
+}
+
+button{
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:8px 12px;
+ border-radius:5px;
+ cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Venda</h2>
+
+<div class="box">
+
+<label>Cliente</label>
+<select id="cliente"></select>
+
+<button onclick="criarVenda()">Criar Venda</button>
+
+</div>
+
+<div class="box">
+
+<h3>Adicionar Item</h3>
+
+<select id="tipo">
+<option value="servico">Serviço</option>
+<option value="produto">Produto</option>
+</select>
+
+<select id="ref"></select>
+
+<input id="qtd" type="number" placeholder="Quantidade" value="1">
+
+<button onclick="addItem()">Adicionar</button>
+
+</div>
+
+<h3>Itens</h3>
+<div id="itens"></div>
+
+<h3>Total: <span id="total">0</span></h3>
+
+<button onclick="fecharVenda()">Fechar Venda</button>
+
+<script>
+
+const id=new URLSearchParams(location.search).get("id")
+let vendaId=id
+
+async function carregarClientes(){
+ const {data}=await supabase.from("clientes").select("id,nome")
+ cliente.innerHTML=data.map(c=>`<option value="${c.id}">${c.nome}</option>`)
+}
+
+async function carregarRefs(){
+
+ if(tipo.value==="servico"){
+  const {data}=await supabase.from("servicos").select("id,nome,preco")
+  ref.innerHTML=data.map(s=>`<option value="${s.id}" data-preco="${s.preco}">${s.nome}</option>`)
+ }
+
+ if(tipo.value==="produto"){
+  const {data}=await supabase.from("produtos").select("id,nome,preco")
+  ref.innerHTML=data.map(p=>`<option value="${p.id}" data-preco="${p.preco}">${p.nome}</option>`)
+ }
+}
+
+tipo.onchange=carregarRefs
+
+async function criarVenda(){
+
+ const {data}=await supabase.from("vendas").insert({
+  cliente_id:cliente.value,
+  status:"aberta"
+ }).select().single()
+
+ vendaId=data.id
+ alert("Venda criada")
+}
+
+async function addItem(){
+
+ const preco=ref.selectedOptions[0].dataset.preco
+
+ await supabase.from("itens_venda").insert({
+  venda_id:vendaId,
+  tipo:tipo.value,
+  referencia_id:ref.value,
+  quantidade:qtd.value,
+  preco:preco
+ })
+
+ carregarItens()
+}
+
+async function carregarItens(){
+
+ const {data}=await supabase.from("itens_venda").select("*").eq("venda_id",vendaId)
+
+ itens.innerHTML=data.map(i=>`
+ <div class="card">
+  ${i.tipo} - ${i.quantidade} x ${i.preco}
+ </div>
+ `).join("")
+
+ const {data:venda}=await supabase.from("vendas").select("total").eq("id",vendaId).single()
+ total.innerText=venda.total
+}
+
+async function fecharVenda(){
+
+ await supabase.from("vendas").update({status:"fechada"}).eq("id",vendaId)
+ alert("Venda fechada")
+ window.location.href="vendas.html"
+}
+
+carregarClientes()
+carregarRefs()
+if(vendaId)carregarItens()
+
+</script>
+
+</body>
+</html>
