@@ -70,7 +70,7 @@ document.getElementById("btnLogin").addEventListener("click", async () => {
 
  msg.innerText=""
 
- const {error}=await supabase.auth.signInWithPassword({
+ const {error}=await supabaseClient.auth.signInWithPassword({
   email:email.value,
   password:senha.value
  })
