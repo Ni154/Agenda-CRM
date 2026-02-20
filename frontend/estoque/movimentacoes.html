@@ -1,1 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Movimentações</title>
 
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.box{
+ background:white;
+ padding:15px;
+ border-radius:10px;
+ margin-bottom:15px;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+.card{
+ background:#fafafa;
+ padding:10px;
+ margin:5px 0;
+ border-radius:5px;
+}
+
+button{
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:8px 12px;
+ border-radius:5px;
+ cursor:pointer;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Movimentações</h2>
+
+<div class="box">
+
+<label>Produto</label>
+<select id="produto"></select>
+
+<label>Tipo</label>
+<select id="tipo">
+<option value="entrada">Entrada</option>
+<option value="saida">Saída</option>
+<option value="ajuste">Ajuste</option>
+</select>
+
+<label>Quantidade</label>
+<input id="qtd" type="number">
+
+<label>Origem</label>
+<input id="origem" placeholder="Ex: compra, ajuste, venda">
+
+<button onclick="salvar()">Registrar</button>
+
+</div>
+
+<h3>Histórico</h3>
+<div id="lista"></div>
+
+<script>
+
+async function carregarProdutos(){
+
+ const {data}=await supabase.from("produtos").select("id,nome").order("nome")
+
+ produto.innerHTML=data.map(p=>`<option value="${p.id}">${p.nome}</option>`)
+}
+
+async function salvar(){
+
+ await supabase.from("movimentacoes_estoque").insert({
+  produto_id:produto.value,
+  tipo:tipo.value,
+  quantidade:qtd.value,
+  origem:origem.value
+ })
+
+ alert("Movimentação registrada")
+ carregarHistorico()
+}
+
+async function carregarHistorico(){
+
+ const {data}=await supabase
+ .from("movimentacoes_estoque")
+ .select("tipo,quantidade,origem,created_at,produtos(nome)")
+ .order("created_at",{ascending:false})
+
+ lista.innerHTML=data.map(m=>`
+  <div class="card">
+   ${m.produtos?.nome} - ${m.tipo} - ${m.quantidade}<br>
+   ${m.origem || ""}<br>
+   ${new Date(m.created_at).toLocaleString()}
+  </div>
+ `).join("")
+}
+
+carregarProdutos()
+carregarHistorico()
+
+</script>
+
+</body>
+</html>
