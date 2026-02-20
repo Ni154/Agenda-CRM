@@ -1,4 +1,3 @@
-
 /* RESET */
 *{
  margin:0;
@@ -6,14 +5,121 @@
  box-sizing:border-box;
 }
 
-/* BASE */
 body{
- font-family:Arial, Helvetica, sans-serif;
- background:#f4f4f4;
- color:#333;
+ font-family: 'Segoe UI', Arial, sans-serif;
+ background:#F8F6F1;
+ color:#2B2B2B;
 }
 
-/* LOGIN */
+/* ===== SIDEBAR ===== */
+.sidebar{
+ width:230px;
+ height:100vh;
+ background:#fff;
+ position:fixed;
+ left:0;
+ top:0;
+ padding:20px;
+ box-shadow:2px 0 8px rgba(0,0,0,0.08);
+}
+
+.sidebar h2{
+ color:#C9A227;
+ margin-bottom:20px;
+}
+
+.sidebar a{
+ display:block;
+ padding:12px 15px;
+ border-radius:8px;
+ margin:6px 0;
+ color:#2B2B2B;
+ text-decoration:none;
+ font-weight:500;
+ transition:.2s;
+}
+
+.sidebar a:hover{
+ background:#E8D9A5;
+ color:#A8841E;
+}
+
+.sidebar a.active{
+ background:#C9A227;
+ color:white;
+}
+
+/* ===== CONTENT ===== */
+.content{
+ margin-left:250px;
+ padding:25px;
+}
+
+/* ===== CARDS ===== */
+.card{
+ background:#fff;
+ border-radius:12px;
+ padding:18px;
+ box-shadow:0 6px 14px rgba(0,0,0,0.06);
+ transition:.2s;
+ margin-bottom:15px;
+}
+
+.card:hover{
+ transform:translateY(-2px);
+ box-shadow:0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* GRID DASHBOARD */
+.cards{
+ display:flex;
+ gap:15px;
+ flex-wrap:wrap;
+}
+
+.card-box{
+ background:#fff;
+ padding:20px;
+ border-radius:12px;
+ flex:1;
+ min-width:220px;
+ box-shadow:0 6px 14px rgba(0,0,0,0.06);
+}
+
+/* ===== INPUTS ===== */
+input, select, textarea{
+ width:100%;
+ padding:10px;
+ margin:5px 0;
+ border-radius:8px;
+ border:1px solid #ddd;
+ font-size:14px;
+ transition:.2s;
+}
+
+input:focus, select:focus, textarea:focus{
+ outline:none;
+ border:1px solid #C9A227;
+ box-shadow:0 0 5px rgba(201,162,39,.3);
+}
+
+/* ===== BOTÕES ===== */
+button{
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:10px 14px;
+ border-radius:8px;
+ cursor:pointer;
+ font-weight:500;
+ transition:.2s;
+}
+
+button:hover{
+ background:#A8841E;
+}
+
+/* ===== LOGIN ===== */
 .login-body{
  display:flex;
  justify-content:center;
@@ -22,118 +128,35 @@ body{
 }
 
 .login-box{
- background:#fff;
+ background:white;
  padding:30px;
- border-radius:10px;
+ border-radius:12px;
  width:320px;
  text-align:center;
- box-shadow:0 5px 15px rgba(0,0,0,0.1);
+ box-shadow:0 8px 20px rgba(0,0,0,0.1);
 }
 
-.logo{
- width:150px;
- margin-bottom:15px;
-}
-
-/* INPUTS */
-input, select, textarea{
- width:100%;
- padding:10px;
- margin:5px 0;
- border-radius:5px;
- border:1px solid #ccc;
- font-size:14px;
-}
-
-/* BOTÕES */
-button{
+/* ===== TOAST ===== */
+.toast{
+ position:fixed;
+ top:20px;
+ right:20px;
  background:#C9A227;
  color:white;
- border:none;
- padding:10px;
- border-radius:5px;
- cursor:pointer;
- transition:0.2s;
+ padding:12px 18px;
+ border-radius:8px;
+ box-shadow:0 4px 10px rgba(0,0,0,0.2);
+ opacity:0;
+ transform:translateY(-10px);
+ transition:.3s;
 }
 
-button:hover{
- background:#A8841E;
+.toast.show{
+ opacity:1;
+ transform:translateY(0);
 }
 
-/* SIDEBAR */
-.sidebar{
- width:220px;
- height:100vh;
- background:#fff;
- position:fixed;
- left:0;
- top:0;
- box-shadow:2px 0 5px rgba(0,0,0,0.1);
- padding:20px;
-}
-
-.sidebar a{
- display:block;
- margin:10px 0;
- text-decoration:none;
- color:#333;
- font-weight:bold;
-}
-
-.sidebar a:hover{
- color:#C9A227;
-}
-
-/* CONTENT */
-.content{
- margin-left:240px;
- padding:20px;
-}
-
-/* CARDS */
-.card{
- background:#fff;
- padding:15px;
- margin:10px 0;
- border-radius:10px;
- box-shadow:0 5px 10px rgba(0,0,0,0.08);
-}
-
-/* GRID DASHBOARD */
-.cards{
- display:flex;
- gap:20px;
- flex-wrap:wrap;
-}
-
-.card-box{
- background:#fff;
- padding:20px;
- border-radius:10px;
- flex:1;
- min-width:200px;
- box-shadow:0 5px 10px rgba(0,0,0,0.1);
-}
-
-/* BOX FORM */
-.box{
- background:#fff;
- padding:20px;
- border-radius:10px;
- max-width:600px;
- margin:auto;
- box-shadow:0 5px 10px rgba(0,0,0,0.1);
-}
-
-/* FOTO PERFIL */
-.profile-img{
- width:120px;
- border-radius:50%;
- display:block;
- margin:10px auto;
-}
-
-/* RESPONSIVO */
+/* ===== RESPONSIVO ===== */
 @media(max-width:768px){
 
  .sidebar{
@@ -149,5 +172,4 @@ button:hover{
  .cards{
   flex-direction:column;
  }
-
 }
