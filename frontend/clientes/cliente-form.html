@@ -1,1 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cadastro Cliente</title>
 
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.box{
+ background:white;
+ padding:20px;
+ border-radius:10px;
+ max-width:450px;
+ margin:auto;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+input{
+ width:100%;
+ padding:10px;
+ margin:5px 0;
+ border-radius:5px;
+ border:1px solid #ccc;
+}
+
+button{
+ width:100%;
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:10px;
+ border-radius:5px;
+ cursor:pointer;
+ margin-top:10px;
+}
+
+img{
+ width:120px;
+ border-radius:50%;
+ margin:10px auto;
+ display:block;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Cliente</h2>
+
+<img id="preview" src="">
+
+<input id="nome" placeholder="Nome">
+<input id="telefone" placeholder="Telefone">
+<input id="email" placeholder="Email">
+<input id="nascimento" type="date">
+
+<label>Foto</label>
+<input type="file" id="foto">
+
+<button onclick="salvar()">Salvar</button>
+
+</div>
+
+<script>
+
+const id=new URLSearchParams(location.search).get("id")
+
+async function carregar(){
+
+ if(!id) return
+
+ const {data}=await supabase.from("clientes").select("*").eq("id",id).single()
+
+ nome.value=data.nome
+ telefone.value=data.telefone
+ email.value=data.email
+ nascimento.value=data.data_nascimento
+
+ if(data.foto_url) preview.src=data.foto_url
+}
+
+async function uploadFoto(){
+
+ const file=foto.files[0]
+ if(!file) return null
+
+ const path=`clientes/${Date.now()}_${file.name}`
+
+ await supabase.storage.from("clientes").upload(path,file)
+
+ const {data}=supabase.storage.from("clientes").getPublicUrl(path)
+
+ return data.publicUrl
+}
+
+async function salvar(){
+
+ let fotoUrl=null
+
+ if(foto.files.length) fotoUrl=await uploadFoto()
+
+ const payload={
+  nome:nome.value,
+  telefone:telefone.value,
+  email:email.value,
+  data_nascimento:nascimento.value
+ }
+
+ if(fotoUrl) payload.foto_url=fotoUrl
+
+ if(id){
+  await supabase.from("clientes").update(payload).eq("id",id)
+ }else{
+  await supabase.from("clientes").insert(payload)
+ }
+
+ alert("Salvo")
+ window.location.href="clientes.html"
+}
+
+carregar()
+
+</script>
+
+</body>
+</html>
