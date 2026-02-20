@@ -1,1 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ficha Cliente</title>
 
+<link rel="stylesheet" href="../css/style.css">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="../js/supabase.js"></script>
+
+<style>
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+
+.box{
+ background:white;
+ padding:20px;
+ border-radius:10px;
+ max-width:800px;
+ margin:auto;
+ box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+img{
+ width:120px;
+ border-radius:50%;
+ display:block;
+ margin:auto;
+}
+
+textarea{
+ width:100%;
+ padding:10px;
+ margin:5px 0;
+ border-radius:5px;
+ border:1px solid #ccc;
+}
+
+.card{
+ background:#fafafa;
+ padding:10px;
+ margin:5px 0;
+ border-radius:5px;
+}
+
+button{
+ background:#C9A227;
+ color:white;
+ border:none;
+ padding:10px;
+ border-radius:5px;
+ cursor:pointer;
+ margin-top:10px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>Ficha Cliente</h2>
+
+<img id="foto">
+
+<p><b id="nome"></b></p>
+<p id="telefone"></p>
+<p id="email"></p>
+
+<button onclick="editar()">Editar Cliente</button>
+
+<hr>
+
+<h3>Anamnese</h3>
+
+<label>Alergias</label>
+<textarea id="alergias"></textarea>
+
+<label>Medicamentos</label>
+<textarea id="medicamentos"></textarea>
+
+<label>Doenças</label>
+<textarea id="doencas"></textarea>
+
+<label>Observações</label>
+<textarea id="observacoes"></textarea>
+
+<button onclick="salvarAnamnese()">Salvar Anamnese</button>
+
+<hr>
+
+<h3>Histórico de Agendamentos</h3>
+<div id="historico"></div>
+
+</div>
+
+<script>
+
+const id=new URLSearchParams(location.search).get("id")
+
+async function carregarCliente(){
+
+ const {data}=await supabase.from("clientes").select("*").eq("id",id).single()
+
+ nome.innerText=data.nome
+ telefone.innerText=data.telefone
+ email.innerText=data.email
+
+ if(data.foto_url) foto.src=data.foto_url
+}
+
+async function carregarAnamnese(){
+
+ const {data}=await supabase.from("anamnese_clientes").select("*").eq("cliente_id",id).single()
+
+ if(!data) return
+
+ alergias.value=data.alergias
+ medicamentos.value=data.medicamentos
+ doencas.value=data.doencas
+ observacoes.value=data.observacoes
+}
+
+async function salvarAnamnese(){
+
+ await supabase.from("anamnese_clientes").upsert({
+  cliente_id:id,
+  alergias:alergias.value,
+  medicamentos:medicamentos.value,
+  doencas:doencas.value,
+  observacoes:observacoes.value
+ })
+
+ alert("Anamnese salva")
+}
+
+async function carregarHistorico(){
+
+ const {data}=await supabase
+ .from("agendamentos")
+ .select("data_hora,status,servicos(nome)")
+ .eq("cliente_id",id)
+ .order("data_hora",{ascending:false})
+
+ historico.innerHTML=data.map(a=>`
+  <div class="card">
+   ${new Date(a.data_hora).toLocaleString()} - ${a.servicos?.nome} - ${a.status}
+  </div>
+ `).join("")
+}
+
+function editar(){
+ window.location.href=`cliente-form.html?id=${id}`
+}
+
+carregarCliente()
+carregarAnamnese()
+carregarHistorico()
+
+</script>
+
+</body>
+</html>
