@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Login</title>
 
 <link rel="stylesheet" href="css/style.css">
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="js/supabase.js"></script>
-<script src="js/auth.js"></script>
 
 <style>
 body{
@@ -20,16 +20,14 @@ body{
  background:#f4f4f4;
  font-family:Arial;
 }
-
 .login-box{
  background:white;
  padding:30px;
  border-radius:10px;
- width:300px;
+ width:320px;
  text-align:center;
  box-shadow:0 5px 15px rgba(0,0,0,0.1);
 }
-
 input{
  width:100%;
  padding:10px;
@@ -37,7 +35,6 @@ input{
  border:1px solid #ccc;
  border-radius:5px;
 }
-
 button{
  width:100%;
  padding:10px;
@@ -48,11 +45,6 @@ button{
  border-radius:5px;
  cursor:pointer;
 }
-
-.logo{
- width:150px;
- margin-bottom:15px;
-}
 </style>
 
 </head>
@@ -61,22 +53,20 @@ button{
 
 <div class="login-box">
 
-<!-- Coloque sua logo dentro da pasta assets -->
-<img src="assets/logo.png" class="logo">
-
 <h2>Login</h2>
 
-<input id="email" type="email" placeholder="Email">
+<input id="email" placeholder="Email">
 <input id="senha" type="password" placeholder="Senha">
 
-<button onclick="login()">Entrar</button>
+<button id="btnLogin">Entrar</button>
 
 <p id="msg" style="color:red;"></p>
 
 </div>
 
 <script>
-async function login(){
+
+document.getElementById("btnLogin").addEventListener("click", async () => {
 
  msg.innerText=""
 
@@ -91,7 +81,8 @@ async function login(){
  }
 
  window.location.href="dashboard.html"
-}
+})
+
 </script>
 
 </body>
